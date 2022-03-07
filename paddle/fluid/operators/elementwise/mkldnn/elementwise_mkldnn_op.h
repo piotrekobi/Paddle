@@ -16,6 +16,8 @@
 #include <string>
 #include <unordered_map>
 #include "paddle/fluid/operators/elementwise/elementwise_add_op.h"
+#include "paddle/fluid/operators/elementwise/elementwise_grad_op.h"
+
 #include "paddle/fluid/operators/elementwise/elementwise_op_function.h"
 
 #include "paddle/fluid/framework/data_layout_transform.h"

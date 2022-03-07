@@ -253,8 +253,8 @@ REGISTER_OP_KERNEL(
 
 REGISTER_OP_KERNEL(
     elementwise_add_grad, MKLDNN, ::paddle::platform::CPUPlace,
-    ops::EltwiseMKLDNNGradKernel<paddle::platform::bfloat16, elementwise_add>,
-    ops::EltwiseMKLDNNGradKernel<float, elementwise_add>)
+    ops::EltwiseMKLDNNGradKernel<paddle::platform::bfloat16, elementwise_op::elementwise_add>,
+    ops::EltwiseMKLDNNGradKernel<float, elementwise_op::elementwise_add>)
 
 REGISTER_OP_KERNEL(
     elementwise_sub, MKLDNN, paddle::platform::CPUPlace,
@@ -266,8 +266,8 @@ REGISTER_OP_KERNEL(
 
 REGISTER_OP_KERNEL(
     elementwise_sub_grad, MKLDNN, ::paddle::platform::CPUPlace,
-    ops::EltwiseMKLDNNGradKernel<paddle::platform::bfloat16, elementwise_sub>,
-    ops::EltwiseMKLDNNGradKernel<float, elementwise_sub>)
+    ops::EltwiseMKLDNNGradKernel<paddle::platform::bfloat16, elementwise_op::elementwise_sub>,
+    ops::EltwiseMKLDNNGradKernel<float, elementwise_op::elementwise_sub>)
 
 REGISTER_OP_KERNEL(
     elementwise_mul, MKLDNN, ::paddle::platform::CPUPlace,
@@ -279,8 +279,8 @@ REGISTER_OP_KERNEL(
 
 REGISTER_OP_KERNEL(
     elementwise_mul_grad, MKLDNN, ::paddle::platform::CPUPlace,
-    ops::EltwiseMKLDNNGradKernel<paddle::platform::bfloat16, elementwise_mul>,
-    ops::EltwiseMKLDNNGradKernel<float, elementwise_mul>)
+    ops::EltwiseMKLDNNGradKernel<paddle::platform::bfloat16, elementwise_op::elementwise_mul>,
+    ops::EltwiseMKLDNNGradKernel<float, elementwise_op::elementwise_mul>)
 
 REGISTER_OP_KERNEL(elementwise_div, MKLDNN, paddle::platform::CPUPlace,
                    ops::EltwiseMKLDNNKernel<float, dnnl::algorithm::binary_div>,
@@ -289,5 +289,5 @@ REGISTER_OP_KERNEL(elementwise_div, MKLDNN, paddle::platform::CPUPlace,
 
 REGISTER_OP_KERNEL(
     elementwise_div_grad, MKLDNN, paddle::platform::CPUPlace,
-    ops::EltwiseMKLDNNGradKernel<paddle::platform::bfloat16, elementwise_div>,
-    ops::EltwiseMKLDNNGradKernel<float, elementwise_div>)
+    ops::EltwiseMKLDNNGradKernel<paddle::platform::bfloat16, elementwise_op::elementwise_div>,
+    ops::EltwiseMKLDNNGradKernel<float, elementwise_op::elementwise_div>)

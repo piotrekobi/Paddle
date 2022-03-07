@@ -125,7 +125,9 @@ function(op_library TARGET)
             string(REPLACE "_op" "_mkldnn_op" MKLDNN_FILE "${TARGET}")
             if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/mkldnn/${MKLDNN_FILE}.cc)
                 list(APPEND mkldnn_cc_srcs mkldnn/${MKLDNN_FILE}.cc)
+
             endif()
+
         endif()
         if(WITH_XPU)
             string(REPLACE "_op" "_op_xpu" XPU_FILE "${TARGET}")
@@ -258,6 +260,7 @@ function(op_library TARGET)
         list(REMOVE_ITEM hip_srcs "decode_jpeg_op.cu")
         hip_library(${TARGET} SRCS ${cc_srcs} ${hip_cc_srcs} ${miopen_cu_cc_srcs} ${miopen_cu_srcs} ${mkldnn_cc_srcs} ${hip_srcs} DEPS ${op_library_DEPS}
                 ${op_common_deps})
+    
     elseif (WITH_XPU_KP AND ${xpu_kp_cc_srcs_len} GREATER 0)
         xpu_library(${TARGET} SRCS ${cc_srcs} ${mkldnn_cc_srcs} ${xpu_cc_srcs} ${xpu_kp_cc_srcs} DEPS ${op_library_DEPS} ${op_common_deps})
     else()
@@ -265,6 +268,7 @@ function(op_library TARGET)
         if(WITH_UNITY_BUILD AND op_library_UNITY)
             # Combine the cc source files.
             compose_unity_target_sources(${UNITY_TARGET} cc ${cc_srcs} ${mkldnn_cc_srcs} ${xpu_cc_srcs} ${npu_cc_srcs} ${mlu_cc_srcs})
+            
             if(TARGET ${UNITY_TARGET})
                 # If `UNITY_TARGET` exists, add source files to `UNITY_TARGET`.
                 target_sources(${UNITY_TARGET} PRIVATE ${unity_target_cc_sources})
@@ -277,6 +281,10 @@ function(op_library TARGET)
         else()
             cc_library(${TARGET} SRCS ${cc_srcs} ${mkldnn_cc_srcs} ${xpu_cc_srcs} ${npu_cc_srcs} ${mlu_cc_srcs} DEPS ${op_library_DEPS}
                 ${op_common_deps})
+            
+            message(WARNING "${mkldnn_cc_srcs}")
+            
+                
         endif()
     endif()
 
@@ -289,6 +297,9 @@ function(op_library TARGET)
     list(LENGTH miopen_cu_cc_srcs miopen_cu_cc_srcs_len)
     list(LENGTH npu_cc_srcs npu_cc_srcs_len)
     list(LENGTH mlu_cc_srcs mlu_cc_srcs_len)
+
+    message(WARNING "${mkldnn_cc_srcs}")
+
 
     # Define operators that don't need pybind here.
     foreach(manual_pybind_op "compare_all_op" "compare_op" "logical_op" "bitwise_op" "nccl_op"
@@ -457,10 +468,10 @@ function(op_library TARGET)
         foreach(mkldnn_src ${mkldnn_cc_srcs})
         set(op_name "")
         find_register(${mkldnn_src} "REGISTER_OP_KERNEL" op_name)
-        if(NOT ${op_name} EQUAL "")
+        # if(NOT ${op_name} EQUAL "")
             file(APPEND ${pybind_file} "USE_OP_DEVICE_KERNEL(${op_name}, MKLDNN);\n")
             set(pybind_flag 1)
-        endif()
+        # endif()
         endforeach()        
       endif()
     endif()
@@ -498,6 +509,7 @@ function(register_operators)
     cmake_parse_arguments(register_operators "${options}" "${oneValueArgs}"
             "${multiValueArgs}" ${ARGN})
     file(GLOB OPS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "*_op.cc")
+
     string(REPLACE "_mkldnn" "" OPS "${OPS}")
     string(REPLACE "_xpu" "" OPS "${OPS}")
     string(REPLACE "_npu" "" OPS "${OPS}")
@@ -516,6 +528,7 @@ function(register_operators)
             endif()
         endif()
     endforeach()
+
 
     # Complete the processing of `UNITY_TARGET`.
     if(WITH_UNITY_BUILD)
