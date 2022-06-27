@@ -43,48 +43,11 @@ class Pad3dMKLDNNKernel : public framework::OpKernel<T> {
     auto src_tz = phi::vectorize(input->dims());
     auto dst_tz = phi::vectorize(output->dims());
 
-    for (auto i : src_tz) std::cout << std::setw(2) << i << " ";
-    std::cout << std::endl;
-
-    for (auto i : dst_tz) std::cout << std::setw(2) << i << " ";
-    std::cout << std::endl;
-
-    for (auto i : paddings) std::cout << std::setw(2) << i << " ";
-    std::cout << std::endl << std::endl << std::endl << std::endl;
-
     auto paddle_dt = framework::TransToProtoVarType(input->dtype());
     dnnl::memory::data_type onednn_dt = framework::ToMKLDNNDataType(paddle_dt);
 
     auto dims = phi::vectorize(output->dims());
 
-    auto out_data = std::vector<float>(
-        static_cast<float>(phi::product(output->dims())), 1.0f);
-
-    // auto out_data = std::vector<T>(phi::product(output->dims()));
-    // std::fill(out_data.begin(), out_data.end(), pad_value);
-
-
-
-    auto md = dnnl::memory::desc(dims, onednn_dt, MKLDNNMemoryFormat::ncdhw);
-
-
-    platform::ReorderMKLDNNHandler reorder_handler(
-        dims, paddle_dt, onednn_dt, paddle_dt, onednn_dt, dev_ctx.GetEngine());
-
-    // auto reorder_src_memory_p = reorder_handler.AcquireSrcMemory(
-    //     md, platform::to_void_cast(&out_data));
-    auto reorder_src_memory_p = dnnl::memory(md, dev_ctx.GetEngine());
-    auto reorder_dst_memory_p =
-        reorder_handler.AcquireDstMemory(output, md, dev_ctx.GetPlace());
-    auto reorder_p = reorder_handler.AcquireReorder(reorder_dst_memory_p,
-                                                    reorder_src_memory_p);
-
-    auto& astream = platform::MKLDNNDeviceContext::tls().get_stream();
-    reorder_p->execute(astream, *reorder_src_memory_p, *reorder_dst_memory_p);
-    astream.wait();
-
-    // output->set_layout(framework::DataLayout::kMKLDNN);
-    // output->set_mem_desc(reorder_dst_memory_p->get_desc());
   }
 };
 template <typename T>
